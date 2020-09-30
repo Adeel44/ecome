@@ -1,25 +1,40 @@
-const Category = require('../model/category');
+const CartList = require('../model/cartlist');
 const error = require('../constant/error')
-const Product = require('../model/product');
-
-
 
 module.exports.create = (req, res) => {
-    const category = new Category(req.body);
-    category.save((err, data) => {
-        if (err) {
-            return res.status(400).json({
-                error: "Error in creating"
-            });
-        }
-        res.json({ data });
-    });
-};
 
+    const cartlist = new CartList({
+
+        price: req.body.price,
+        quantity: req.body.quantity,
+        calculation: req.body.calculation
+                  
+        })
+    
+        cartlist.save()
+        .then(data => {
+            if (!data || data == null) {
+                return res.status(200).send({
+                    message: "Records Not Saved",
+                    data: {},
+                    status: 'error'
+                });
+            }
+            res.status(200).send({
+                message: "Cart saved successfully",
+                status: 'status',
+                data: data
+            })
+        })
+        .catch(err => {
+            let errorObject = error.getErrorMessage(err)
+            res.status(errorObject.code).send({ message: errorObject.message, data: {} })
+        })
+}
 
 module.exports.list = (req, res) => {
 
-    Category.find()
+    CartList.find()
         .then(data => {
             if (!data || data == null) {
                 return res.status(200).send({
@@ -44,7 +59,7 @@ module.exports.list = (req, res) => {
 
 module.exports.findById = (req, res) => {
 
-    Category.findById(req.params.id)
+    CartList.findById(req.params.id)
 
     .then(data => {
             if (!data || data == null) {
@@ -73,7 +88,7 @@ module.exports.update = (req, res) => {
 
     let new_data = req.body;
 
-    Category.findByIdAndUpdate(req.params.id, { $set: new_data }, { new: true , useFindAndModify: false})
+    CartList.findByIdAndUpdate(req.params.id, { $set: new_data }, { new: true , useFindAndModify: false})
         .then(data => {
             if (!data || data == null) {
                 console.log(data)
@@ -84,7 +99,7 @@ module.exports.update = (req, res) => {
                 });
             }
             res.status(200).send({
-                message: "Record Updated Successfully",
+                message: "Cart Updated Successfully",
                 data: data,
                 status: 'success'
             });
@@ -97,7 +112,7 @@ module.exports.update = (req, res) => {
 
 module.exports.delete = (req, res) => {
 
-    Category.findByIdAndDelete(req.params.id)
+    CartList.findByIdAndDelete(req.params.id)
         .then(data => {
             if (!data || data == null) {
                 return res.status(200).send({

@@ -1,17 +1,16 @@
-const Task = require('../model/task');
+const CheckoutDetail = require('../model/checkoutdetail');
 const error = require('../constant/error')
 
 module.exports.create = (req, res) => {
 
-    const task = new Task({
+    const checkoutdetail = new CheckoutDetail({
 
-        name: req.body.name,
-        description: req.body.description,
-        time: req.body.time,
+        shippingaddress: req.body.shippingaddress,
+        paymentMethod: req.body.paymentMethod,
                   
         })
     
-        task.save()
+        checkoutdetail.save()
         .then(data => {
             if (!data || data == null) {
                 return res.status(200).send({
@@ -21,7 +20,7 @@ module.exports.create = (req, res) => {
                 });
             }
             res.status(200).send({
-                message: "Record saved successfully",
+                message: "address saved successfully",
                 status: 'status',
                 data: data
             })
@@ -32,9 +31,9 @@ module.exports.create = (req, res) => {
         })
 }
 
-module.exports.findAll = (req, res) => {
+module.exports.list = (req, res) => {
 
-    Task.find()
+    CheckoutDetail.find()
         .then(data => {
             if (!data || data == null) {
                 return res.status(200).send({
@@ -57,9 +56,9 @@ module.exports.findAll = (req, res) => {
     
 }
 
-module.exports.findOne = (req, res) => {
+module.exports.findById = (req, res) => {
 
-    Task.findById(req.params.id)
+    CheckoutDetail.findById(req.params.id)
 
     .then(data => {
             if (!data || data == null) {
@@ -88,7 +87,7 @@ module.exports.update = (req, res) => {
 
     let new_data = req.body;
 
-    Task.findByIdAndUpdate(req.params.id, { $set: new_data }, { new: true , useFindAndModify: false})
+    CheckoutDetail.findByIdAndUpdate(req.params.id, { $set: new_data }, { new: true , useFindAndModify: false})
         .then(data => {
             if (!data || data == null) {
                 console.log(data)
@@ -99,7 +98,7 @@ module.exports.update = (req, res) => {
                 });
             }
             res.status(200).send({
-                message: "Record Updated Successfully",
+                message: "Adrress Updated Successfully",
                 data: data,
                 status: 'success'
             });
@@ -112,7 +111,7 @@ module.exports.update = (req, res) => {
 
 module.exports.delete = (req, res) => {
 
-    Task.findByIdAndDelete(req.params.id)
+    CheckoutDetail.findByIdAndDelete(req.params.id)
         .then(data => {
             if (!data || data == null) {
                 return res.status(200).send({
@@ -128,5 +127,3 @@ module.exports.delete = (req, res) => {
             res.status(errorObject.code).send({ message: errorObject.message, status: 'error' })
         });
 }
-
-

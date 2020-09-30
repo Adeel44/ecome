@@ -2,14 +2,16 @@ const { Order, CartItem } = require('../model/order');
 
 const Product = require('../model/product');
 
+const error = require('../constant/error')
+
 const User = require('../model/user')
 
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+// const sgMail = require('@sendgrid/mail');
+// sgMail.setApiKey('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');
 
 exports.orderById = (req, res) => {
     Order.findById(req.params.id)
-        .populate('products.product', 'name price')
+      //  .populate('products.product', 'name price')
         .exec((err, order) => {
             if (err || !order) {
                 return res.status(400).json({
@@ -17,40 +19,9 @@ exports.orderById = (req, res) => {
                 });
             }
             res.send(order)
-           // next();
+           
         });
 };
-
-// exports.create = (req, res) => {
-//     console.log('CREATE ORDER: ', req.body);
-//    // req.body.order.user = req.profile;
-//     const order = new Order(req.body.order);
-//     order.save((error, data) => {
-//         if (error) {
-//             return res.status(400).json({
-//                 error: "error"
-//             });
-//         }
-//         // send email alert to admin
-//         // order.address
-//         // order.products.length
-//         // order.amount
-//         const emailData = {
-//             to: 'kaloraat@gmail.com',
-//             from: 'noreply@ecommerce.com',
-//             subject: `A new order is received`,
-//             html: `
-//             <p>Customer name:</p>
-//             <p>Total products: ${order.products.length}</p>
-//             <p>Total cost: ${order.amount}</p>
-//             <p>Login to dashboard to the order in detail.</p>
-//         `
-//         };
-//         sgMail.send(emailData);
-//         res.json(data);
-//     });
-// };
-
 
 
 module.exports.create = (req, res) => {
@@ -65,6 +36,7 @@ module.exports.create = (req, res) => {
            const order = new Order({
             userId: req.body.userId,  
             productId: req.body.productId,
+           
            
             
             user: req.body.userId
@@ -99,132 +71,68 @@ module.exports.create = (req, res) => {
 }
 
 
-
-// exports.create = (req, res) => {
-
-//     console.log('CREATE ORDER: ', req.body);
-
-//     Product.findById(req.body.productId)
-//     .then(product => {
-//       if (!product) {
-//         return res.status(404).json({
-//           message: "Product not found"
-//         });
-//        }
-//       const order = new Order({
-//        // _id: mongoose.Types.ObjectId(),
-//         quantity: req.body.quantity,
-//         product: req.body.productId
-//       });
-//       return order.save();
-//     })
-//     .then(result => {
-//       console.log(result);
-//       res.status(201).json({
-//         message: "Order stored",
-//         createdOrder: {
-//           _id: result._id,
-//           product: result.product,
-//           quantity: result.quantity
-//         }
-        
-//       });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//       res.status(500).json({
-//         error: err
-//       });
-//     });
-
-
-//    // req.body.order.user = req.profile;
-//     // const order = new Order(req.body.order);
-//     // order.save((error, data) => {
-//     //     if (error) {
-//     //         return res.status(400).json({
-//     //             error: "error in order"
-//     //         });
-//     //     }
-        
-//     //     const emailData = {
-//     //         to: 'adeel99ahmed@gmail.com',
-//     //         from: 'noreply@ecommerce.com',
-//     //         subject: `A new order is received`,
-//     //         html: `
-//     //         <p>Customer name:</p>
-//     //         <p>Total products: ${order.products.length}</p>
-//     //         <p>Total cost: ${order.amount}</p>
-//     //         <p>Login to dashboard to the order in detail.</p>
-//     //     `
-//     //     };
-//     //     sgMail.send(emailData);
-//     //     res.json(data);
-//     // });
-// };
-
-
-
-
-// module.exports.create = (req, res) => {
-
-//     const order = new Order(req.body.order)
-//     // ({
-
-//     //     name: req.body.name,
-//     //     description: req.body.description,
-//     //     time: req.body.time,
-                  
-//     //     })
-    
-//         order.save()
-//         .then(data => {
-//             if (!data || data == null) {
-//                 return res.status(200).send({
-//                     message: "Records Not Saved",
-//                     data: {},
-//                     status: 'error'
-//                 });
-//             }
-//             res.status(200).send({
-//                 message: "Record saved successfully",
-//                 status: 'status',
-//                 data: data
-//             })
-//         })
-//         .catch(err => {
-//             let errorObject = error.getErrorMessage(err)
-//             res.status(errorObject.code).send({ message: errorObject.message, data: {} })
-//         })
-// }
-
-
-
-exports.listOrders = (req, res) => {
+exports.list= (req, res) => {
     Order.find()
         .populate('user', '_id name address')
         .sort('-created')
         .exec((err, orders) => {
             if (err) {
                 return res.status(400).json({
-                    error: errorHandler(error)
+                    error: "error"
                 });
             }
             res.json(orders);
         });
 };
 
-exports.getStatusValues = (req, res) => {
-    res.json(Order.schema.path('status').enumValues);
-};
+module.exports.update = (req, res) => {
 
-exports.updateOrderStatus = (req, res) => {
-    Order.update({ _id: req.body.orderId }, { $set: { status: req.body.status } }, (err, order) => {
-        if (err) {
-            return res.status(400).json({
-                error: errorHandler(err)
+    if (!req.body) {
+        return res.status(400).send({
+            message: "Record Must Not be Empty",
+            status: 'error'
+        });
+    }
+
+    let new_data = req.body;
+
+    Order.findByIdAndUpdate(req.params.id, { $set: new_data }, { new: true , useFindAndModify: false})
+        .then(data => {
+            if (!data || data == null) {
+                console.log(data)
+                return res.status(200).send({
+                    message: "Record not found",
+                    data: {},
+                    status: 'error'
+                });
+            }
+            res.status(200).send({
+                message: "Record Updated Successfully",
+                data: data,
+                status: 'success'
             });
-        }
-        res.json(order);
-    });
-};
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(errorObject.code).send({ message: errorObject.message, status: 'error' })
+        });
+}
+
+module.exports.delete = (req, res) => {
+
+    Order.findByIdAndDelete(req.params.id)
+        .then(data => {
+            if (!data || data == null) {
+                return res.status(200).send({
+                    message: "Record not found",
+                    data: {},
+                    status: 'error'
+                });
+            }
+            res.status(200).send({ message: "Order deleted successfully!", data, status: 'success' });
+        })
+        .catch(err => {
+            let errorObject = error.getErrorMessage(err)
+            res.status(errorObject.code).send({ message: errorObject.message, status: 'error' })
+        });
+}

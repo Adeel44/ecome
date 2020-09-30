@@ -4,10 +4,11 @@ const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 
 const authRoute = require('./routes/auth')
-const taskRoute = require('./routes/task')
 const categoryRoutes = require('./routes/category');
 const productRoutes = require('./routes/product');
 const orderRoutes = require('./routes/order');
+const checkoutRoutes = require('./routes/checkoutdetail');
+const cartlistRoutes = require('./routes/cartlist');
 
 
 dotenv.config()
@@ -31,18 +32,20 @@ app.use(express.json())
 
 
 app.get('/' , (req , res)=>{
-  res.json({success_note: "welcome to  app"})
+  res.json({success_note: "welcome to  application"})
 })
 
 //Route middlewae
  app.use('/api/user' , authRoute)
 
- app.use('/api/task' , taskRoute)
  app.use('/api/category' , categoryRoutes)
 
  app.use('/api/product' , productRoutes)
 
  app.use('/api/order' , orderRoutes)
+
+ app.use('/api/checkout' , checkoutRoutes)
+ app.use('/api/cartlist' , cartlistRoutes)
  
 
 
