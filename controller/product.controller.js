@@ -5,40 +5,6 @@ const fs = require('fs');
 const Product = require('../model/product');
 const product = require('../model/product');
 
-exports.productById = (req, res) => {
-
-    Product.findById(req.params.id)
-       .populate('category')
-        .exec((err, product) => {
-            if (err || !product) {
-                return res.status(400).json({
-                    error: 'Product not found'
-                });
-            }
-            res.send(product)
-          //  next();
-        });
-
-
-    // Product.findById(req.params.id)
-    // .populate('category')
-
-    // .then(data => {
-    //         if (!data || data == null) {
-    //             return res.status(200).send({
-    //                 message: "Record not found",
-    //                 data: {},
-    //                 status: 'error'
-    //             });
-    //         }
-    //         res.send({ data, message: 'successfully !', status: 'success' });
-    //     })
-    //     .catch(err => {
-    //         let errorObject = error.getErrorMessage(err)
-    //         res.status(errorObject.code).send({ message: errorObject.message, data: {}, status: 'error' })
-    //     })
-
-};
 
 module.exports.productById = (req, res) => {
 
@@ -192,37 +158,6 @@ module.exports.list = (req, res) => {
 }
 
 
-/**
- * sell / arrival
- * by sell = /products?sortBy=sold&order=desc&limit=4
- * by arrival = /products?sortBy=createdAt&order=desc&limit=4
- * if no params are sent, then all products are returned
- */
-
-// exports.list = (req, res) => {
-//     let order = req.query.order ? req.query.order : 'asc';
-//     let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
-//     let limit = req.query.limit ? parseInt(req.query.limit) : 6;
-
-//     Product.find()
-//         .select('-photo')
-//         .populate('category')
-//         .sort([[sortBy, order]])
-//         .limit(limit)
-//         .exec((err, products) => {
-//             if (err) {
-//                 return res.status(400).json({
-//                     error: 'Products not found'
-//                 });
-//             }
-//             res.json(products);
-//         });
-// };
-
-/**
- * it will find the products based on the req product category
- * other products that has the same category, will be returned
- */
 
 exports.listRelated = (req, res) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 6;

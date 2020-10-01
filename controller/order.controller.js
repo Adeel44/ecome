@@ -6,8 +6,7 @@ const error = require('../constant/error')
 
 const User = require('../model/user')
 
-// const sgMail = require('@sendgrid/mail');
-// sgMail.setApiKey('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');
+
 
 exports.orderById = (req, res) => {
     Order.findById(req.params.id)
@@ -37,8 +36,6 @@ module.exports.create = (req, res) => {
             userId: req.body.userId,  
             productId: req.body.productId,
            
-           
-            
             user: req.body.userId
                       
             })
