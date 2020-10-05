@@ -19,10 +19,10 @@ const userScheme = new mongoose.Schema({
         min:6,
         max:1000
     },
-    role: {
-        type: String,
-        default: "clint"
-    },
+    // role: {
+    //     type: String,
+    //     default: "clint"
+    // },
     date:{
         type:Date,
         default:Date.now

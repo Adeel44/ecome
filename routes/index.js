@@ -2,8 +2,7 @@ const express = require('express'); //Cargar framework de nodejs
 const router = express.Router(); //Cargar nucleo router
 
 //Importar controlador de payouts
-const paypal_controller = require
-('../controller/paypal.controller');
+const paypal_controller = require('../controller/paypal.controller');
 
 module.exports = function(){
 

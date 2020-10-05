@@ -6,12 +6,14 @@ const bcrypt = require('bcryptjs');
 const{registerValidation , loginValidation} = require('../config/validation')
 
 module.exports.register= async (req, res) => {
-
+    console.log('req.body',req.body)
     const {error}= registerValidation(req.body)
    if(error) return res.send(error.details[0].message);
    // checking if email already exist
    const emailExist = await User.findOne({email:req.body.email})
    if(emailExist) return res.status(400).send("Email already exist")
+
+   
 
    // hash the password
    const salt = await bcrypt.genSalt(10);
@@ -24,7 +26,8 @@ module.exports.register= async (req, res) => {
       })
       try{
           const savedUser = await user.save()
-          res.send({user:user._id})
+        //   res.send({user:user._id})
+        //   res.redirect('/');
 
       }catch(err){
           res.status(400).send(err)
@@ -46,8 +49,9 @@ module.exports.login = async (req, res) => {
 
    // Create and assaign token
    const  token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-   res.header('auth-token' , token).send(token)
-    
+   console.log('auth-token' , token)
+   console.log("log in")
+    //redirect , data
 }
 
 module.exports.verify_posts =  (req, res) => {
