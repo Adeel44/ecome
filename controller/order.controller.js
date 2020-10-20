@@ -10,7 +10,7 @@ const User = require('../model/user')
 
 exports.orderById = (req, res) => {
     Order.findById(req.params.id)
-      //  .populate('products.product', 'name price')
+       .populate('products.product', 'name price')
         .exec((err, order) => {
             if (err || !order) {
                 return res.status(400).json({
@@ -35,6 +35,7 @@ module.exports.create = (req, res) => {
            const order = new Order({
             userId: req.body.userId,  
             productId: req.body.productId,
+            amount: req.body.amount,
            
             user: req.body.userId
                       

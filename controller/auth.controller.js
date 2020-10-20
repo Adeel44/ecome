@@ -22,11 +22,13 @@ module.exports.register= async (req, res) => {
       const user = new User({
           name:req.body.name,
           email:req.body.email,
+          role:req.body.role,
+       //   status:
           password:hashPassword
       })
       try{
           const savedUser = await user.save()
-        //   res.send({user:user._id})
+          res.send({user:user._id})
         //   res.redirect('/');
 
       }catch(err){
@@ -49,9 +51,8 @@ module.exports.login = async (req, res) => {
 
    // Create and assaign token
    const  token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-   console.log('auth-token' , token)
-   console.log("log in")
-    //redirect , data
+   res.header('auth-token' , token).send(token)
+    
 }
 
 module.exports.verify_posts =  (req, res) => {

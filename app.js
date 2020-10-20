@@ -3,6 +3,14 @@ const app = express()
 const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const path = require('path') 
+const Product = require('./model/product');
+const Order = require('./model/order');
+const User = require('./model/user');
+
+
+var methodOverride = require('method-override')
+// const model = require('./model/product')();
+
 
 let ejs = require('ejs');
 
@@ -19,7 +27,24 @@ const categoryRoutes = require('./routes/category');
 const productRoutes = require('./routes/product');
 const orderRoutes = require('./routes/order');
 const checkoutRoutes = require('./routes/checkoutdetail');
-const cartlistRoutes = require('./routes/cartlist');
+// const cartlistRoutes = require('./routes/cartlist');
+
+const drequestRoute = require('./routes/dashboard-request')
+
+const dproductRoute = require('./routes/dashboard-product')
+const dorderRoute = require('./routes/dashboard-order')
+const dpaymentRoute = require('./routes/dashboard-payment')
+const dcategoryRoute = require('./routes/dashboard-category')
+const duserRoute = require('./routes/dashboard-user')
+
+
+
+
+
+
+const cartItemRoutes = require('./routes/cartItems');
+const product = require('./model/product');
+const Category = require('./model/category');
 
 var Publishable_Key = process.env.PUBLISH_KEY
 var Secret_Key = 'sk_test_51HXLjtAlEb4m9EqaM0zrI7lvYpGfWg3KjMfNb1Qk7r2hlGzjKtKaFoYpCJ2DgBUjp5nCZZb5MMO0mbOSUe8AcF8W002zAnnbkW'
@@ -60,7 +85,9 @@ mongoose.connect(process.env.DB_CONNECT,
 
 app.use(express.json())
 
-
+app.use(methodOverride("_method", {
+    methods: ["POST", "GET"]
+  }))
 
 
 // app.get('/' , (req , res)=>{
@@ -79,7 +106,8 @@ app.use('/api/paypal', paypalroute());
 
 
 //Route middlewae
-//  app.use('/api/user' , authRoute)
+
+ app.use('/api/user' , authRoute)
 
  app.use('/api/category' , categoryRoutes)
 
@@ -88,9 +116,27 @@ app.use('/api/paypal', paypalroute());
  app.use('/api/order' , orderRoutes)
 
  app.use('/api/checkout' , checkoutRoutes)
- app.use('/api/cartlist' , cartlistRoutes)
+
+ // app.use('/api/cartlist' , cartlistRoutes)
+
+ app.use('/api/cart' , cartItemRoutes)
+
+
 
  app.use('/api/admin' , adminRoute)
+
+ app.use('/' , drequestRoute)
+
+ app.use('/' , dproductRoute)
+ app.use('/' , dorderRoute)
+ app.use('/' , dpaymentRoute)
+ app.use('/' , dcategoryRoute)
+ app.use('/' , duserRoute)
+
+
+
+
+
 
 
 
@@ -99,10 +145,97 @@ app.get('/', (req, res)=>{
     res.send({Note:'welcome to Ecom'}) 
 }) 
 
-app.get('/dashboard', (req, res)=>{ 
-    res.render('dashboard') 
-}) 
+app.get('/dashboard',async (req, res)=>{ 
+    let order = await Order.find()
+    let product = await Product.find()
+    let category = await Category.find()
+    let user = await User.find()
+    
+//    if(order){
 
+//        res.render('dashboard', {noOfOrder:order.length }) 
+    
+//    }
+res.render('dashboard', {noOfOrder:order.length,
+    noOfProduct:product.length,
+    noOfCategory:category.length,
+    noOfUser:user.length
+
+})
+   
+})
+
+
+// app.get('/dashboard',async (req, res)=>{ 
+//     let product = await Product.find()
+    
+//    if(product){
+
+//        res.render('dashboard', {noOfOrder:product.length}) 
+//    }
+   
+// })
+
+
+// app.get('/dashboard',async (req, res)=>{ 
+//     let product = await Product.find()
+//    if(!product){
+
+//        res.render('dashboard', {noOfProduct:product.length}) 
+//    }
+
+// }) 
+
+
+
+
+
+// app.get('/data', (req, res)=>{ 
+//     res.render('data') 
+// }) 
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+// app.get('/products', (req, res)=>{ 
+
+//     res.render('products' ,data) 
+// })
+
+
+app.get('/orders', (req, res)=>{ 
+    res.render('orders') 
+})
+
+
+
+// app.get('/payments', (req, res)=>{ 
+//     res.render('payments') 
+// })
+
+// app.get('/categories', (req, res)=>{ 
+//     res.render('categories') 
+// })
+
+
+
+// app.post('/add', (req, res)=>{
+
+    
+// })
+
+
+
+app.get('/users', (req, res)=>{ 
+    res.render('users') 
+})
 
 app.get('/dashboard/login', (req, res)=>{ 
     res.render('login')
@@ -127,7 +260,6 @@ app.get('/forgot-password', (req, res)=>{
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
  
-
 
 
 app.get('/home', function(req, res){ 
@@ -162,7 +294,6 @@ app.post('/payment', function(req, res){
     }); 
 }) 
  
-
 
 const port = process.env.PORT || 3000;
 app.listen(port,() => {
