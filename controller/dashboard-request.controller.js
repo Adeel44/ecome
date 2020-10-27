@@ -17,6 +17,7 @@ module.exports.edit = async (req, res)=>{
 
     const { id } = req.params;
     await User.findByIdAndUpdate( {_id:id} , req.body);
+    console.log('req.body', req.body)
     
     res.redirect('/request');
 

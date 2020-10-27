@@ -1,4 +1,6 @@
 const Product = require('../model/product')
+const Category = require('../model/category');
+
 
 module.exports.getList = (req, res) => {
     Product.find({}, (err, product)=>{
@@ -10,8 +12,19 @@ module.exports.getList = (req, res) => {
         });
 
     });
-  
+
+    // Product.find().populate('category').exec(function(err, product) {
+    //     if (err) { return console.log(err); }
+    //         res.render('products', {
+    //         product:product,
+        
+    //     });
+    
+        
+    // });
 }
+
+
 
 module.exports.create = async (req, res) => {
     const product = new Product(req.body);

@@ -3,9 +3,16 @@ const app = express()
 const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const path = require('path') 
-const Product = require('./model/product');
-const Order = require('./model/order');
-const User = require('./model/user');
+
+ // require('./config/email');
+
+
+
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
+
+
+const isAuth = require("./middleware/is-auth");
 
 
 var methodOverride = require('method-override')
@@ -20,7 +27,7 @@ const paypalroute = require('./routes/index'); //Rutas
 const bodyParser = require('body-parser');//Cargar lector de formularios
 
 
-const adminRoute = require('./routes/admin')
+// const adRoute = require('./routes/ad')
 
 const authRoute = require('./routes/auth')
 const categoryRoutes = require('./routes/category');
@@ -37,13 +44,14 @@ const dpaymentRoute = require('./routes/dashboard-payment')
 const dcategoryRoute = require('./routes/dashboard-category')
 const duserRoute = require('./routes/dashboard-user')
 
+const adminRoute = require('./routes/admin')
+
 
 
 
 
 
 const cartItemRoutes = require('./routes/cartItems');
-const product = require('./model/product');
 const Category = require('./model/category');
 
 var Publishable_Key = process.env.PUBLISH_KEY
@@ -56,8 +64,6 @@ const stripe = require('stripe')(Secret_Key)
 // app.use(bodyparser.json()) 
 
 
-
-
 dotenv.config()
 
 
@@ -68,6 +74,11 @@ app.set('view engine', 'ejs')
 app.use(express.static(__dirname + '/public'));
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
+
+const store = new MongoDBStore({
+    uri: process.env.DB_CONNECT,
+    collection: "test1",
+});
 
 mongoose.connect(process.env.DB_CONNECT,
   {
@@ -82,12 +93,35 @@ mongoose.connect(process.env.DB_CONNECT,
 })
 
 
+app.use(
+    session({
+      secret: "secret",
+      resave: false,
+      saveUninitialized: false,
+      store: store,
+    })
+);
+
+
 
 app.use(express.json())
 
 app.use(methodOverride("_method", {
     methods: ["POST", "GET"]
   }))
+
+
+// const isAuth = (req, res, next) => {
+//     if (req.session.isAuth) {
+//       next();
+//     } else {
+//       req.session.error = "You have to Login first";
+//       res.redirect("/login");
+//     }
+// };
+    
+
+
 
 
 // app.get('/' , (req , res)=>{
@@ -123,7 +157,7 @@ app.use('/api/paypal', paypalroute());
 
 
 
- app.use('/api/admin' , adminRoute)
+// app.use('/api/admin' , adRoute)
 
  app.use('/' , drequestRoute)
 
@@ -133,11 +167,10 @@ app.use('/api/paypal', paypalroute());
  app.use('/' , dcategoryRoute)
  app.use('/' , duserRoute)
 
+ app.use('/' , adminRoute)
 
 
-
-
-
+ 
 
 
  
@@ -145,25 +178,19 @@ app.get('/', (req, res)=>{
     res.send({Note:'welcome to Ecom'}) 
 }) 
 
-app.get('/dashboard',async (req, res)=>{ 
-    let order = await Order.find()
-    let product = await Product.find()
-    let category = await Category.find()
-    let user = await User.find()
-    
-//    if(order){
 
-//        res.render('dashboard', {noOfOrder:order.length }) 
-    
-//    }
-res.render('dashboard', {noOfOrder:order.length,
-    noOfProduct:product.length,
-    noOfCategory:category.length,
-    noOfUser:user.length
+// app.get('/dashboard', async (req, res)=>{ 
+//     let order = await Order.find()
+//     let product = await Product.find()
+//     let category = await Category.find()
+//     let user = await User.find()
 
-})
+// res.render('dashboard', {noOfOrder:order.length,
+//     noOfProduct:product.length,
+//     noOfCategory:category.length,
+//     noOfUser:user.length })
    
-})
+// })
 
 
 // app.get('/dashboard',async (req, res)=>{ 
@@ -206,21 +233,29 @@ res.render('dashboard', {noOfOrder:order.length,
 
 // app.get('/products', (req, res)=>{ 
 
-//     res.render('products' ,data) 
+//     res.render('products') 
 // })
 
 
-app.get('/orders', (req, res)=>{ 
-    res.render('orders') 
-})
+// app.get('/orders', (req, res)=>{ 
+//     res.render('orders') 
+// })
+
+// app.get('/products', (req, res)=>{ 
+//     res.render('products')
+// })
+
+// app.get('/users', (req, res)=>{ 
+//     res.render('users') 
+// })
 
 
 
-// app.get('/payments', (req, res)=>{ 
+// app.get('/payments',  (req, res)=>{ 
 //     res.render('payments') 
 // })
 
-// app.get('/categories', (req, res)=>{ 
+// app.get('/categories',  (req, res)=>{ 
 //     res.render('categories') 
 // })
 
@@ -233,14 +268,10 @@ app.get('/orders', (req, res)=>{
 
 
 
-app.get('/users', (req, res)=>{ 
-    res.render('users') 
-})
 
 app.get('/dashboard/login', (req, res)=>{ 
     res.render('login')
 }) 
-
 
 
 app.get('/dashboard/register', (req, res)=>{ 
@@ -267,6 +298,7 @@ app.get('/home', function(req, res){
     key: Publishable_Key 
     }) 
 }) 
+
 
 app.post('/payment', function(req, res){ 
 

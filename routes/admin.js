@@ -1,22 +1,18 @@
-var express = require('express');
-var router = express.Router();
-const verify = require('../middleware/verifyToken')
+var express = require('express')
+var router = express.Router()
+const isAuth = require("../middleware/is-auth");
 
-const { isClient, isAdmin } = require("../middleware/isadmin");
 const admincontroller = require('../controller/admin.controller');
 
 
+router.get("/dashboard/login", admincontroller.get_login)
+router.post("/dashboard/login", admincontroller.login)
+router.get("/dashboard/register", admincontroller.get_register)
+router.post("/dashboard/register", admincontroller.register)
 
+router.get('/dashboard', isAuth, admincontroller.dashboard)
 
-
-router.post('/register', admincontroller.register);
-router.post('/login', isAdmin , admincontroller.login);
-
-
-// router.get('/posts', verify, admincontroller.verify_posts );
-
-
-
+router.post("/dashboard/logout", admincontroller.dashboard_logout)
 
 
 

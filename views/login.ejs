@@ -9,10 +9,16 @@
   </div>
   <!-- /.login-logo -->
   <div class="card">
+    <% if(err) { %>
+      <div class="alert alert-danger alert-dismissible">
+        <%= err %> 
+      </div>
+      <% } %>  
+    
     <div class="card-body login-card-body">
       <p class="login-box-msg">Sign in to start your session</p>
 
-      <form action="/api/admin/login" method="POST">
+      <form action="/dashboard/login" method="POST">
         <div class="input-group mb-3">
           <input type="email" class="form-control" name="email" placeholder="Email">
           <div class="input-group-append">

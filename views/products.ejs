@@ -172,7 +172,7 @@
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span></button>
                         </div>
-                        <form action="/add" method="POST">
+                        <form action="/add" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                           <label for="name">Name</label>
                           <input type="text" placeholder="Enter product name" id="name" class="form-control" name="name">
@@ -189,6 +189,10 @@
                       <div class="form-group">
                         <label>Category</label>
                         <input type="string" placeholder="Enter category" id="category" class="form-control" name="category">
+                      </div>
+                      <div class="form-group">
+                        <label>Image</label>
+                        <input type="file" placeholder="Enter category" id="file" class="form-control" name="file">
                       </div>
 
                         <div class="modal-footer justify-content-between">
@@ -352,7 +356,6 @@
 </div>
 <!-- ./wrapper -->
 
-
 <!-- jQuery -->
 <script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
@@ -366,6 +369,7 @@
 <script src="../../dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../../dist/js/demo.js"></script>
+
 <!-- page script -->
 <script>
   $(function () {
